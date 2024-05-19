@@ -3,19 +3,18 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   python3.12
 
-  Sample SAM Template for sam-app
+  Sample SAM Template for Custom Resource to upload to S3 bucket
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 180
 Parameters:
   S3BucketName:
     Type: String
     Description: "S3 bucket to create."
     AllowedPattern: "[a-zA-Z][a-zA-Z0-9_-]*"
 Resources:
-  SampleS3Bucket:
+  S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref S3BucketName
@@ -23,13 +22,20 @@ Resources:
     Type: Custom::S3CustomResource
     Properties:
       ServiceToken: !GetAtt AWSLambdaFunction.Arn
-      the_bucket: !Ref SampleS3Bucket
+      the_bucket: !Ref S3Bucket
   LambdaFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       Architectures:
         - x86_64
+    Connectors:
+      S3Conn:
+        Properties:
+          Destination:
+            Id: S3Bucket
+          Permissions:
+          - Write
 
     Metadata:
       Dockerfile: Dockerfile
