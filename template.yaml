@@ -21,7 +21,7 @@ Resources:
   S3CustomResource:
     Type: Custom::S3CustomResource
     Properties:
-      ServiceToken: !GetAtt AWSLambdaFunction.Arn
+      ServiceToken: !GetAtt LambdaFunction.Arn
       the_bucket: !Ref S3Bucket
   LambdaFunction:
     Type: AWS::Serverless::Function
